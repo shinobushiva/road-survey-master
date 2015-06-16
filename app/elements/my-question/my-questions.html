@@ -1,0 +1,58 @@
+<dom-module id="my-questions">
+  <style>
+    .iconed {
+      vertical-align: -.2em;
+    }
+  </style>
+  <template>
+
+    <template is="dom-if" if="{{road}}">
+      <my-material>
+        <h3>
+          <span>{{road.attributes.name}}</span> について回答中</h3>
+        <paper-button on-click=changeRoad>
+          <iron-icon icon="exit-to-app"></iron-icon>
+          <span class="iconed">別の道について回答する</span>
+        </paper-button>
+        <template is="dom-repeat" items="{{questions}}">
+          <my-question service={{service}} question="{{item}}" road={{road}}>
+            <span>{{item.attributes.description}}</span>
+          </my-question>
+        </template>
+      </my-material>
+    </template>
+
+  </template>
+  <script>
+    // element registration
+    Polymer({
+      is: "my-questions",
+
+      properties: {
+        road: {
+          type: Object,
+          notify: true,
+        },
+        service: {
+          type: Object,
+          observer: '_serviceChanged',
+        },
+      },
+      changeRoad: function() {
+        this.road = null;
+      },
+      _serviceChanged: function() {
+        var that = this;
+
+        this.service.getQuestions(function(questions) {
+
+          that.questions = questions;
+
+        });
+
+      },
+
+    });
+  </script>
+
+</dom-module>

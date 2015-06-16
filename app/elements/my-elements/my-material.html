@@ -1,0 +1,27 @@
+<dom-module id="my-material">
+  <style>
+    paper-material {
+      width: 96%;
+      border-top-left-radius: 2px;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+      border-bottom-left-radius: 2px;
+      box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+      margin: 2%;
+      background-color: rgb(255, 255, 255);
+      text-align: left;
+      padding: 10px;
+    }
+  </style>
+  <template>
+    <paper-material elevation="1">
+      <content></content>
+    </paper-material>
+  </template>
+  <script>
+    Polymer({
+      is: "my-material",
+    });
+  </script>
+
+</dom-module>

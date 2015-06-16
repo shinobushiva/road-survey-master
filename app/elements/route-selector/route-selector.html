@@ -1,0 +1,147 @@
+<dom-module id="my-balloon-content">
+  <style>
+    .iconed {
+      vertical-align: -.2em;
+    }
+  </style>
+  <template>
+    <h3>{{road.attributes.name}}</h3>
+    <h4>{{road.attributes.description}}</h4>
+
+    <paper-button on-click=inputClicked>
+      <iron-icon icon="launch"></iron-icon>
+      <span class="iconed">この道を入力する</span>
+    </paper-button>
+  </template>
+  <script>
+    // element registration
+    Polymer({
+      is: "my-balloon-content",
+
+      properties: {
+        road: Object,
+      },
+
+      inputClicked: function() {
+        this.fire("road-selected", this.road);
+      },
+    });
+  </script>
+</dom-module>
+
+
+<dom-module id="route-selector">
+  <style>
+    google-map {
+      height: 600px;
+    }
+  </style>
+  <template>
+    <google-maps-api libraries="places"></google-maps-api>
+
+    <my-material hidden$="{{road}}">
+      <h3>地図から回答する経路を選んでください</h3>
+    </my-material>
+    <my-material hidden$="{{road}}">
+      <google-map map={{map}} on-google-map-ready=mapReady>
+      </google-map>
+    </my-material>
+
+  </template>
+  <script>
+    Polymer({
+      is: "route-selector",
+
+      properties: {
+        road: {
+          type: Object,
+          notify: true,
+        },
+        service: Object,
+      },
+
+      isEmpty: function(e) {
+        return true;
+      },
+      mapReady: function(e) {
+        var that = this;
+        this.road = null;
+
+        map.fitToMarkers = true;
+
+        var mapObj = e.target.map;
+
+        // this.service = this.$.parse_service.instance;
+        this.service.getRoads(function(roads) {
+          that.roads = roads;
+
+          console.log(roads);
+          for (var i = 0; i < roads.length; i++) {
+            var r = roads[i];
+            var s = r.attributes.startFrom;
+            var e = r.attributes.endAt;
+
+            var ss = new google.maps.LatLng(s.latitude, s.longitude);
+            var ee = new google.maps.LatLng(e.latitude, e.longitude);
+
+            // var markerSS = new google.maps.Marker({
+            //   position: ss,
+            //   map: mapObj
+            // });
+            // var markerEE = new google.maps.Marker({
+            //   position: ee,
+            //   map: mapObj
+            // });
+
+            var bounds = new google.maps.LatLngBounds();
+            bounds.extend(ss);
+            bounds.extend(ee);
+            mapObj.fitBounds(bounds);
+
+            var polylineCoordinates = [ss, ee];
+            var polyline = new google.maps.Polyline({
+              path: polylineCoordinates,
+              geodesic: true,
+              strokeColor: '#FF0000',
+              strokeOpacity: 0.5,
+              strokeWeight: 10
+            });
+
+            polyline.setMap(mapObj);
+
+            with({
+              bounds: bounds,
+              r: r
+            }) {
+              // works since <myPolyline> is an instance of an Object
+              google.maps.event.addListener(polyline, 'click', function() {
+                that.showInfoWindow(mapObj, r, bounds.getCenter(), this);
+              });
+            }
+          }
+        });
+      },
+      showInfoWindow: function(mapObj, road, center, obj) {
+        var that = this;
+
+        if (this.infowindow) {
+          this.infowindow.close();
+        }
+
+        var mbc = document.createElement('my-balloon-content');
+        mbc.road = road;
+        mbc.addEventListener('road-selected', function(e) {
+          that.road = e.detail;
+          console.log("road selected");
+        });
+
+        this.infowindow = new google.maps.InfoWindow({
+          content: mbc,
+          position: center,
+        });
+        this.infowindow.open(mapObj, obj);
+      },
+    });
+  </script>
+
+</dom-module>

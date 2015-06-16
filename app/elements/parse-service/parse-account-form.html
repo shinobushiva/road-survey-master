@@ -1,0 +1,100 @@
+<dom-module id="parse-account-form">
+  <script src="//www.parsecdn.com/js/parse-1.4.2.min.js"></script>
+  <style>
+  .iconed {
+    vertical-align: -.2em;
+  }
+  </style>
+  <template>
+    <my-material id="login_form">
+      <paper-input label="Username" value="{{ username }}"></paper-input>
+      <paper-input label="Password" value="{{ password }}"></paper-input>
+      <template is="dom-if" if="{{!showEmail}}">
+        <paper-button on-click="login">
+          ログイン
+        </paper-button>
+      </template>
+      <template is="dom-if" if="{{showEmail}}">
+        <paper-input id="email" label="E-mail" value="{{ email }}"></paper-input>
+        <paper-button on-click=createUser>
+          アカウント作成
+        </paper-button>
+      </template>
+      <template is="dom-if" if="{{!showEmail}}">
+        <paper-button on-click=showCreate>
+          新しくアカウントを作る場合はこちら
+        </paper-button>
+      </template>
+      <template is="dom-if" if="{{showEmail}}">
+        <paper-button on-click=showLogin>
+          アカウントをお持ちの方はこちら
+        </paper-button>
+      </template>
+
+    </my-material>
+    <my-material id="logout_form">
+      <h3>こんにちわ
+        <span>{{service.user.attributes.username}}</span> さん</h3>
+      <paper-button on-click="logout">
+        <iron-icon icon="exit-to-app"></iron-icon>
+        <span class="iconed">ログアウトする</span>
+      </paper-button>
+    </my-material>
+  </template>
+  <script>
+    // element registration
+    Polymer({
+      is: "parse-account-form",
+
+      showEmail: Boolean,
+      properties: {
+        service: {
+          type: Object,
+          notify: true,
+        },
+      },
+
+      ready: function() {
+        // this.service =  this.$.parse_service.instance;
+        this.checkLogin();
+        this.showEmail = false;
+
+      },
+      checkLogin: function() {
+        if (Parse.User.current()) {
+          this.$.logout_form.removeAttribute("hidden");
+          this.$.login_form.setAttribute("hidden", true);
+        } else {
+          this.$.logout_form.setAttribute("hidden", true);
+          this.$.login_form.removeAttribute("hidden");
+        }
+      },
+      login: function() {
+        var that = this;
+        this.service.login(this.username, this.password,
+          function() {
+            that.checkLogin();
+          });
+
+      },
+      logout: function() {
+        this.service.logout();
+        this.checkLogin();
+      },
+      showCreate() {
+        this.showEmail = true;
+      },
+      showLogin() {
+        this.showEmail = false;
+      },
+      createUser: function() {
+        this.service.createUser(this.username, this.password, this.email);
+      },
+      getQuestions: function() {
+        this.service.getQuestions();
+      },
+
+    });
+  </script>
+
+</dom-module>

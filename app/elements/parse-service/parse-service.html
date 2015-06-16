@@ -1,0 +1,167 @@
+<dom-module id="parse-service">
+  <script src="//www.parsecdn.com/js/parse-1.4.2.min.js"></script>
+  <style>
+
+  </style>
+  <template>
+  </template>
+  <script>
+    (function() {
+
+      function handleParseError(err) {
+        switch (err.code) {
+          case Parse.Error.INVALID_SESSION_TOKEN:
+            Parse.User.logOut();
+            //... // If web browser, render a log in screen
+            //... // If Express.js, redirect the user to the log in route
+            break;
+
+            //... // Other Parse API errors that you want to explicitly handle
+        }
+      }
+    })();
+
+    // Parse.Cloud.beforeSave("Answer", function(request, response) {
+    //   Parse.Session.current().then(function(session) {
+    //     if (session.get('restricted')) {
+    //       response.error('write operation not allowed');
+    //     }
+    //     response.success();
+    //   });
+    // });
+
+    // element registration
+    Polymer({
+      is: "parse-service",
+
+      properties: {
+        service: {
+          type: Object,
+          notify: true,
+        },
+        user: {
+          type: Object,
+          notify: true,
+        }
+
+      },
+
+      setUser: function(u){
+        this.user = u;
+        // Notification required for binding to update!
+        this.notifyPath('service.user.attributes.username',
+          this.user.attributes.username);
+      },
+
+      ready: function() {
+
+        console.log("only one?");
+        Parse.initialize(
+          "jIkIFXHcHLNQEfnhClDK73uV2W0Eu0ek1XTpnTSS",
+          "VYkaA0qyyVaWlWC4BJfbm0jjzlQbf53Ul3kPzwdw");
+
+        if (Parse.User.current() != null) {
+          console.log("you are already login");
+          this.setUser(Parse.User.current());
+        }
+
+        this.service = this;
+
+      },
+
+      saveAnswer: function(ans, ques, road) {
+
+        var Answer = Parse.Object.extend("Answer");
+        var answer = new Answer();
+        answer.save({
+          user: this.user,
+          answer: ans,
+          question: ques,
+          road: road,
+        }).then(function(object) {
+          console.log(object);
+        });
+      },
+
+      createUser: function(username, password, email) {
+        var that = this;
+        var user = new Parse.User();
+        user.set("username", username);
+        user.set("password", password);
+        user.set("email", email);
+        // other fields can be set just like with Parse.Object
+        user.set("phone", "650-555-0000");
+
+        user.signUp(null, {
+          success: function(user) {
+            that.setUser(user);
+          },
+          error: function(user, error) {
+            // Show the error message somewhere and let the user try again.
+            alert("Error: " + error.code + " " + error.message);
+            handleParseError(error);
+          }
+        });
+      },
+
+      login: function(username, password, callback) {
+
+        var that = this;
+        var u = new Parse.User();
+        u.set("username", username);
+        u.set("password", password);
+
+        console.log("try logging in");
+        u.logIn({
+          success: function(us) {
+            that.setUser(us);
+            callback();
+          },
+          error: function(us, error) {
+            alert("Error: " + error.code + " " + error.message);
+            handleParseError(error);
+          }
+        });
+      },
+
+      logout: function() {
+        Parse.User.logOut();
+        this.user = null;
+      },
+
+      //this will be moved later
+      getRoads: function(callback) {
+        console.log("getRoads");
+        //var that = this;
+        var Road = Parse.Object.extend("Road");
+        var query = new Parse.Query(Road);
+        query.find({
+          success: function(obj) {
+            //that.road = obj;
+            callback(obj);
+          },
+          error: function(object, error) {
+            console.log(error);
+            handleParseError(error);
+          }
+        });
+      },
+
+      getQuestions: function(callback) {
+        var Question = Parse.Object.extend("Question");
+        var query = new Parse.Query(Question);
+        console.log("getQuestions");
+        query.find({
+          success: function(questions) {
+            callback(questions);
+          },
+          error: function(object, error) {
+            console.log(error);
+            handleParseError(error);
+          }
+        });
+      }
+
+    });
+  </script>
+</dom-module>

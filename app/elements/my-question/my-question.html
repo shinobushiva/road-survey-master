@@ -1,0 +1,75 @@
+<dom-module id="my-question">
+  <style>
+    {
+      .description {
+        margin-left: 1em;
+        margin-top: -.5em;
+        margin-bottom: 1em;
+      }
+      .iconed {
+        vertical-align: -.2em;
+      }
+      .selected {
+        color: green;
+        font-weight: bold;
+      }
+    }
+  </style>
+  <template>
+    <my-material>
+      <h3>{{question.attributes.content}}</h3>
+      <div class="description">{{question.attributes.description}}</div>
+      <div>
+        <template is="dom-repeat" items="{{question.attributes.selections}}" index-as="num">
+          <paper-button on-click="answerClicked">
+            <template is="dom-if" if="{{ne(item,answer)}}">
+              <iron-icon icon="check-box-outline-blank"></iron-icon>
+              <span class="iconed">{{item}}</span>
+            </template>
+            <template is="dom-if" if="{{eq(item,answer)}}">
+              <iron-icon class="selected" icon="check"></iron-icon>
+              <span class="iconed selected">{{item}}</span>
+            </template>
+          </paper-button>
+        </template>
+      </div>
+
+    </my-material>
+  </template>
+  <script>
+    // element registration
+    Polymer({
+      is: "my-question",
+
+      properties: {
+        title: String,
+        service: Object,
+        question: Object,
+        road: Object,
+
+      },
+
+      ready: function() {
+        this.answer = null;
+      },
+
+      eq: function(a, b) {
+        return a === b;
+      },
+      ne: function(a, b) {
+        return a !== b;
+      },
+
+      answerAgain: function() {
+        this.ready();
+      },
+
+      answerClicked: function(e) {
+        this.service.saveAnswer(e.model.num, this.question, this.road);
+        this.answer = e.model.item;
+      },
+
+    });
+  </script>
+
+</dom-module>
