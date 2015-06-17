@@ -221,7 +221,7 @@ gulp.task('serve', ['styles', 'elements', 'images'], function() {
       baseDir: ['.tmp', 'app'],
 
       routes: {
-        '/bower_components': '../bower_components'
+        '/bower_components': 'bower_components'
       }
     },
     port: process.env.PORT || 3000,
