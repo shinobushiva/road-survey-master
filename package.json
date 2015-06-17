@@ -35,6 +35,6 @@
   },
   "scripts": {
     "build": "gulp",
-    "postinstall": "gulp default"
+    "start": "node app/scripts/app.js"
   }
 }
