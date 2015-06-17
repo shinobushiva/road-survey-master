@@ -34,7 +34,6 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "build": "gulp",
     "start": "gulp serve"
   }
 }
