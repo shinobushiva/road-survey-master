@@ -219,10 +219,14 @@ gulp.task('serve', ['styles', 'elements', 'images'], function() {
     // https: true,
     server: {
       baseDir: ['.tmp', 'app'],
+
       routes: {
         '/bower_components': 'bower_components'
       }
-    }
+    },
+    port: process.env.PORT || 3000,
+    host: process.env.HOST || 'localhost'
+
   });
 
   gulp.watch(['app/**/*.html'], reload);
