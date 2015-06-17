@@ -202,11 +202,7 @@ gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 // Watch Files For Changes & Reload
 gulp.task('serve', ['styles', 'elements', 'images'], function() {
-  gulp.src('public')
-    .pipe(webserver({
-      host: process.env.HOST || 'localhost', // $HOST は独自定義
-      port: process.env.PORT || 3000
-    }));
+
   browserSync({
     notify: false,
     snippetOptions: {
