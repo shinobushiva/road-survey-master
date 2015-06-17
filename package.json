@@ -34,7 +34,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "build": gulp,
+    "build": "gulp",
     "start": "node app",
   }
 }
