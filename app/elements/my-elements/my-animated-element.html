@@ -1,0 +1,82 @@
+<dom-module id="my-animated-element">
+  <script src="https://cdn.rawgit.com/web-animations/web-animations-js/master/web-animations.min.js"></script>
+  <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+
+  <style>
+    paper-fab {
+      z-index: 100;
+    }
+  </style>
+  <template>
+    <paper-fab id="pulse" icon="star">fab</paper-fab>
+  </template>
+  <script>
+    Polymer({
+      is: "my-animated-element",
+
+      properties: {
+        fromX: Number,
+        fromY: Number,
+        toX: Number,
+        toY: Number,
+      },
+
+
+      ready: function() {
+        var elem = this.$.pulse; //document.querySelector('.pulse');
+        console.log(elem);
+        console.log(this.toX);
+
+        console.log("translate(" + this.toX + ", " + this.toY + ")");
+
+        function myRound(val, precision)
+        {
+             digit = Math.pow(10, precision);
+             val = val * digit;
+             val = Math.round(val);
+             val = val / digit;
+             return val;
+        }
+
+        function x(t, s, e) {
+          t = s + (e-s) * t;
+          return t;
+        }
+
+        function y(t, s, e) {
+          var b = s;
+          var c = e;
+          var d = 1;
+          s = 1.70158;
+
+          return c*(t/=d)*t*((s+1)*t - s) + b;
+
+          // t = Math.cos(t * 360) * 100;
+          // return myRound(t, 2);
+        }
+
+        var ar = [];
+        var step = 30;
+        for (var i = 0; i <= step; i ++) {
+          var ii = i/step;
+          var ls = "" + x(ii,this.fromX,this.toX) + "px";
+          var ts = "" + y(ii,this.fromY,this.toY) + "px";
+          console.log("ts:"+ts);
+          ar.push({
+            offset: myRound(ii,2),
+            opacity: ""+(1-ii*ii),
+            left: ls,
+            top: ts,
+          });
+        }
+
+        var player = elem.animate(ar, {
+          direction: "alternate",
+          duration: 1000,
+          iterations: Infinity
+        });
+      }
+    });
+  </script>
+
+</dom-module>

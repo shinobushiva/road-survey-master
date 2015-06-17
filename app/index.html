@@ -77,7 +77,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <template is="dom-if" if="{{user}}">
             <a data-route="list" href="/list">
-              <iron-icon icon="help"></iron-icon>
+              <iron-icon icon="assignment"></iron-icon>
               <span>サーベイに挑戦する</span>
             </a>
 
@@ -88,7 +88,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </template>
 
           <a data-route="contact" href="/contact">
-            <iron-icon icon="mail"></iron-icon>
+            <iron-icon icon="help"></iron-icon>
             <span>このアプリについて</span>
           </a>
 
@@ -130,13 +130,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </section>
 
             <section data-route="home">
+              <!--
+              <my-animated-element
+              from-x="0" from-y="0" to-x="500" to-y="500">
+              </my-animated-element>
+            -->
               <my-greeting></my-greeting>
               <parse-account-form service={{service}}></parse-account-form>
             </section>
 
             <section data-route="users">
-              <h3>{{user.attributes.username}}</h3>
-              現在のスコアなどを表示します。
+              <my-material>
+                <h3>{{user.attributes.username}}</h3>
+                現在のスコアなどを表示します。
+              </my-material>
             </section>
 
             <section data-route="contact">
